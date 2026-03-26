@@ -59,6 +59,14 @@ export default function DashboardPage() {
       return patchModule({ moduleId: 'geolocation', status: 'browser unterstuetzt nicht', details: {} });
     }
 
+    if (!window.isSecureContext) {
+      return patchModule({
+        moduleId: 'geolocation',
+        status: 'nicht erlaubt',
+        details: { reason: 'Geolocation funktioniert nur in einem sicheren Kontext (https oder localhost).' }
+      });
+    }
+
     return new Promise<void>((resolve) => {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -66,9 +74,15 @@ export default function DashboardPage() {
           resolve();
         },
         (error) => {
-          patchModule({ moduleId: 'geolocation', status: 'nicht erlaubt', details: { reason: error.message || 'Standortzugriff wurde im Browser blockiert.' } });
+          const reasonByCode: Record<number, string> = {
+            [error.PERMISSION_DENIED]: 'Standortzugriff wurde blockiert. Bitte in den Browser-Seiteneinstellungen explizit erlauben.',
+            [error.POSITION_UNAVAILABLE]: 'Standort konnte nicht ermittelt werden (Position unavailable).',
+            [error.TIMEOUT]: 'Standortabfrage hat zu lange gedauert (Timeout).'
+          };
+          patchModule({ moduleId: 'geolocation', status: 'nicht erlaubt', details: { reason: reasonByCode[error.code] ?? error.message ?? 'Standortzugriff wurde im Browser blockiert.' } });
           resolve();
-        }
+        },
+        { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 }
       );
     });
   }
@@ -78,12 +92,73 @@ export default function DashboardPage() {
       return patchModule({ moduleId: 'camera-microphone', status: 'browser unterstuetzt nicht', details: {} });
     }
 
+    if (!window.isSecureContext) {
+      return patchModule({
+        moduleId: 'camera-microphone',
+        status: 'nicht erlaubt',
+        details: { streamFreigegeben: false, reason: 'Kamera/Mikrofon funktionieren nur in einem sicheren Kontext (https oder localhost).' }
+      });
+    }
+
     try {
+      // Reihenfolge wichtig: erst beides probieren, dann auf einzelne Geräte zurückfallen.
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       stream.getTracks().forEach((t) => t.stop());
       patchModule({ moduleId: 'camera-microphone', status: 'erfolgreich gelesen', details: { kameraVorhanden: true, mikrofonVorhanden: true, streamFreigegeben: true } });
     } catch (error) {
-      patchModule({ moduleId: 'camera-microphone', status: 'nicht erlaubt', details: { streamFreigegeben: false, reason: error instanceof Error ? error.message : 'Zugriff wurde abgelehnt oder blockiert.' } });
+      const domError = error as DOMException;
+      if (domError?.name === 'NotFoundError' || domError?.name === 'OverconstrainedError') {
+        try {
+          const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+          videoStream.getTracks().forEach((t) => t.stop());
+          patchModule({
+            moduleId: 'camera-microphone',
+            status: 'erfolgreich gelesen',
+            details: {
+              kameraVorhanden: true,
+              mikrofonVorhanden: false,
+              streamFreigegeben: true,
+              hinweis: 'Nur Kamera verfuegbar/freigegeben. Mikrofon wurde nicht gefunden oder nicht freigegeben.'
+            }
+          });
+          return;
+        } catch {
+          try {
+            const audioStream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+            audioStream.getTracks().forEach((t) => t.stop());
+            patchModule({
+              moduleId: 'camera-microphone',
+              status: 'erfolgreich gelesen',
+              details: {
+                kameraVorhanden: false,
+                mikrofonVorhanden: true,
+                streamFreigegeben: true,
+                hinweis: 'Nur Mikrofon verfuegbar/freigegeben. Kamera wurde nicht gefunden oder nicht freigegeben.'
+              }
+            });
+            return;
+          } catch {
+            // Fallback auf reguläre Fehlermeldung unterhalb.
+          }
+        }
+      }
+
+      const reasonByName: Record<string, string> = {
+        NotAllowedError: 'Zugriff wurde verweigert. Bitte Kamera/Mikrofon in den Browser-Seiteneinstellungen erlauben und erneut versuchen.',
+        NotReadableError: 'Kamera/Mikrofon sind belegt oder konnten nicht gelesen werden.',
+        AbortError: 'Gerätezugriff wurde abgebrochen.',
+        SecurityError: 'Gerätezugriff durch Sicherheitsrichtlinie blockiert.',
+        TypeError: 'Unzulaessige Medien-Anfrage. Bitte Seite neu laden.'
+      };
+
+      patchModule({
+        moduleId: 'camera-microphone',
+        status: 'nicht erlaubt',
+        details: {
+          streamFreigegeben: false,
+          reason: reasonByName[domError?.name] ?? (error instanceof Error ? error.message : 'Zugriff wurde abgelehnt oder blockiert.')
+        }
+      });
     }
   }
 
