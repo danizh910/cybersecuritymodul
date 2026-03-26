@@ -21,7 +21,21 @@
 }
 
 body {
-  @apply min-h-screen bg-surface text-text antialiased;
+  @apply min-h-screen bg-gradient-to-b from-surface to-surface/90 text-text antialiased;
+}
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
+  }
+
+  input,
+  select,
+  textarea {
+    @apply rounded-lg border border-border/60 bg-surface-elevated px-3 py-2 text-sm;
+  }
 }
 
 @layer components {
@@ -46,6 +60,10 @@ body {
   }
 
   .btn-ghost {
-    @apply btn border border-border/60 hover:bg-surface-elevated;
+    @apply btn border border-border/60 bg-surface-elevated/70 hover:bg-surface-elevated;
+  }
+
+  .status-warning {
+    @apply rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200;
   }
 }
