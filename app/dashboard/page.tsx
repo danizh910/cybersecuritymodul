@@ -10,7 +10,7 @@ import { detectFeatures } from '@/lib/feature-detection';
 import { ExplanationMetadata, ExportReportSchema, PermissionModuleResult, ServerRequestInfo } from '@/types/demo';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 const explainCards: ExplanationMetadata[] = [
   { name: 'HTTP Header', source: 'HTTP Request', example: 'accept-language: de-DE', defaultVisible: true, permissionRequired: false, useCases: ['Sprachwahl'], privacyRisks: ['Profilbildung'], transparencyReason: 'Nur anzeigen statt ausnutzen.' },
@@ -18,7 +18,7 @@ const explainCards: ExplanationMetadata[] = [
   { name: 'Media Permissions', source: 'getUserMedia', example: 'Kamera vorhanden', defaultVisible: false, permissionRequired: true, useCases: ['Videochat'], privacyRisks: ['Missbrauch von Sensoren'], transparencyReason: 'Nur lokale Anzeige ohne Upload.' }
 ];
 
-export default function DashboardPage() {
+function DashboardContent() {
   const params = useSearchParams();
   const mode = (params.get('mode') ?? 'info-only') as ExportReportSchema['consentMode'];
   const [serverInfo, setServerInfo] = useState<ServerRequestInfo>();
@@ -175,5 +175,13 @@ export default function DashboardPage() {
 
       <ExportReportButton report={report} />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="rounded-xl border border-white/10 bg-card p-4 text-sm text-slate-300">Dashboard wird geladen ...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
