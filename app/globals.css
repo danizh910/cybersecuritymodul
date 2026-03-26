@@ -3,17 +3,49 @@
 @tailwind utilities;
 
 :root {
-  --surface: 248 250 252;
+  --surface: 241 245 249;
+  --surface-elevated: 255 255 255;
   --card: 255 255 255;
   --text: 15 23 42;
+  --text-muted: 71 85 105;
+  --border: 148 163 184;
 }
 
 .dark {
   --surface: 2 6 23;
+  --surface-elevated: 15 23 42;
   --card: 15 23 42;
   --text: 226 232 240;
+  --text-muted: 148 163 184;
+  --border: 71 85 105;
 }
 
 body {
-  @apply bg-surface text-text;
+  @apply min-h-screen bg-surface text-text antialiased;
+}
+
+@layer components {
+  .app-card {
+    @apply rounded-2xl border border-border/40 bg-card shadow-sm;
+  }
+
+  .text-muted {
+    @apply text-text-muted;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/60 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-blue-600 text-white hover:bg-blue-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-violet-600 text-white hover:bg-violet-500;
+  }
+
+  .btn-ghost {
+    @apply btn border border-border/60 hover:bg-surface-elevated;
+  }
 }

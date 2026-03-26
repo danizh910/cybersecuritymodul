@@ -18,7 +18,7 @@ export function DataTable({ rows }: { rows: BrowserField[] }) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.key} className="border-b border-white/5 align-top">
-              <td className="p-2 font-medium">{row.label}<p className="text-xs text-slate-400">{row.explanation}</p></td>
+              <td className="p-2 font-medium">{row.label}<p className="text-xs text-muted">{row.explanation}</p></td>
               <td className="p-2 break-all">{row.value}</td>
               <td className="p-2">{row.sourceApi}</td>
               <td className="p-2">{row.mode}</td>
