@@ -11,8 +11,11 @@ const config: Config = {
     extend: {
       colors: {
         surface: 'rgb(var(--surface) / <alpha-value>)',
+        'surface-elevated': 'rgb(var(--surface-elevated) / <alpha-value>)',
         card: 'rgb(var(--card) / <alpha-value>)',
-        text: 'rgb(var(--text) / <alpha-value>)'
+        text: 'rgb(var(--text) / <alpha-value>)',
+        'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',
+        border: 'rgb(var(--border) / <alpha-value>)'
       }
     }
   },

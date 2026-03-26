@@ -124,24 +124,24 @@ export default function DashboardPage() {
         <Link href="/" className="text-sm underline">Zurueck</Link>
       </div>
 
-      <section className="rounded-xl border border-white/10 bg-card p-4">
+      <section className="rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">A) Serverseitig sichtbar</h2>
-        <p className="text-sm text-slate-300">Diese Werte kommen aus dem HTTP-Request und sind fuer Webserver/Reverse-Proxy normal sichtbar.</p>
-        <pre className="mt-3 overflow-x-auto rounded bg-black/30 p-3 text-xs">{JSON.stringify(serverInfo, null, 2)}</pre>
+        <p className="text-sm text-muted">Diese Werte kommen aus dem HTTP-Request und sind fuer Webserver/Reverse-Proxy normal sichtbar.</p>
+        <pre className="mt-3 overflow-x-auto rounded bg-surface-elevated p-3 text-xs">{JSON.stringify(serverInfo, null, 2)}</pre>
       </section>
 
-      <section className="rounded-xl border border-white/10 bg-card p-4">
+      <section className="rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">B) Clientseitig sichtbar</h2>
         {browserInfo ? <DataTable rows={browserInfo.fields} /> : <p>Nur nach Zustimmung fuer passive Auswertung.</p>}
       </section>
 
-      <section className="rounded-xl border border-white/10 bg-card p-4">
+      <section className="rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">C) Referrer und URL-Parameter</h2>
-        <p className="text-sm text-slate-300">URL-Parameter und Referer koennen sensible Informationen enthalten. Diese Demo speichert oder leitet sie nicht weiter.</p>
-        <pre className="mt-3 rounded bg-black/30 p-3 text-xs">{JSON.stringify({ params: urlParams, referrer }, null, 2)}</pre>
+        <p className="text-sm text-muted">URL-Parameter und Referer koennen sensible Informationen enthalten. Diese Demo speichert oder leitet sie nicht weiter.</p>
+        <pre className="mt-3 rounded bg-surface-elevated p-3 text-xs">{JSON.stringify({ params: urlParams, referrer }, null, 2)}</pre>
       </section>
 
-      <section className="space-y-3 rounded-xl border border-white/10 bg-card p-4">
+      <section className="space-y-3 rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">D) Browser-Feature-Erkennung</h2>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           <FeatureCard name="WebGL" supported={!!features.webgl} description="3D-Grafik API" relevance="Kann in Kombination identifizierend wirken." />
@@ -167,14 +167,14 @@ export default function DashboardPage() {
         </section>
       )}
 
-      <section className="rounded-xl border border-white/10 bg-card p-4">
+      <section className="rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">4) Was wir bewusst NICHT tun</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
           <li>kein Canvas/Audio/WebGL-Fingerprint</li><li>kein Font-Fingerprint zur Wiedererkennung</li><li>kein Cookie-Tracking, kein localStorage-Identifier</li><li>keine Third-Party-Skripte, kein Session Replay</li><li>kein Cross-Site-Tracking, kein CNAME-Cloaking, kein Bounce Tracking</li><li>kein ETag-Missbrauch, keine Wiedererkennung ueber mehrere Besuche</li>
         </ul>
       </section>
 
-      <section className="space-y-3 rounded-xl border border-white/10 bg-card p-4">
+      <section className="space-y-3 rounded-xl border border-border/40 bg-card p-4">
         <h2 className="text-xl font-semibold">5) Technische Erklaerungen</h2>
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">{explainCards.map((item) => <InfoCard key={item.name} item={item} />)}</div>
       </section>

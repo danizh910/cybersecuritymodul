@@ -20,12 +20,12 @@ export default function LearnPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Datenschutz- & Awareness-Seite</h1>
-      <p className="text-slate-300">Verstaendliche Grundlagen zu Browserdaten, Consent und Privacy-by-Design.</p>
+      <p className="text-muted">Verstaendliche Grundlagen zu Browserdaten, Consent und Privacy-by-Design.</p>
       <div className="grid gap-3 md:grid-cols-2">
         {topics.map(([title, body]) => (
-          <article key={title} className="rounded-xl border border-white/10 bg-card p-4">
+          <article key={title} className="rounded-xl border border-border/40 bg-card p-4">
             <h2 className="font-semibold">{title}</h2>
-            <p className="text-sm text-slate-300">{body}</p>
+            <p className="text-sm text-muted">{body}</p>
           </article>
         ))}
       </div>

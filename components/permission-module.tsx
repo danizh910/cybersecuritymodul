@@ -25,14 +25,14 @@ export function PermissionModule({
   }
 
   return (
-    <section className="rounded-xl border border-white/10 bg-card p-4">
+    <section className="rounded-xl border border-border/40 bg-card p-4">
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-amber-300">{warning}</p>
       <div className="mt-3 flex gap-2">
-        <button onClick={handleStart} className="rounded-md bg-blue-600 px-3 py-2 text-sm" disabled={running}>
+        <button onClick={handleStart} className="btn-primary" disabled={running}>
           {running ? 'Lade…' : 'Starten'}
         </button>
-        <button className="rounded-md border border-white/20 px-3 py-2 text-sm">Abbrechen</button>
+        <button className="btn-ghost">Abbrechen</button>
       </div>
       <div className="mt-3">{children}</div>
     </section>

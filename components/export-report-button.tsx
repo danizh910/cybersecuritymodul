@@ -15,7 +15,7 @@ export function ExportReportButton({ report }: { report: ExportReportSchema }) {
   }
 
   return (
-    <button onClick={exportLocal} className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium">
+    <button onClick={exportLocal} className="btn rounded-lg bg-emerald-600 text-white hover:bg-emerald-500">
       Meinen aktuellen Demo-Bericht lokal exportieren
     </button>
   );
