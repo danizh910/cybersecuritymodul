@@ -185,3 +185,11 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="rounded-xl border border-white/10 bg-card p-4 text-sm text-slate-300">Dashboard wird geladen ...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
