@@ -6,12 +6,14 @@ export function PermissionModule({
   title,
   warning,
   onStart,
-  children
+  children,
+  statusHint
 }: {
   title: string;
   warning: string;
   onStart: () => Promise<void>;
   children: ReactNode;
+  statusHint?: string;
 }) {
   const [running, setRunning] = useState(false);
 
@@ -25,14 +27,14 @@ export function PermissionModule({
   }
 
   return (
-    <section className="rounded-xl border border-border/40 bg-card p-4">
+    <section className="app-card p-4">
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="mt-1 text-sm text-amber-300">{warning}</p>
+      {statusHint && <p className="status-warning mt-3">{statusHint}</p>}
       <div className="mt-3 flex gap-2">
         <button onClick={handleStart} className="btn-primary" disabled={running}>
-          {running ? 'Lade…' : 'Starten'}
+          {running ? 'Lade…' : 'Berechtigung anfragen'}
         </button>
-        <button className="btn-ghost">Abbrechen</button>
       </div>
       <div className="mt-3">{children}</div>
     </section>

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 
-
 const topics = [
   ['Cookies', 'Kleine Browserdaten fuer Sitzungen; koennen auch fuer Tracking missbraucht werden.'],
   ['Browser Fingerprinting', 'Kombination technischer Merkmale kann Wiedererkennung ermoeglichen.'],
@@ -19,17 +18,19 @@ const topics = [
 export default function LearnPage() {
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Datenschutz- & Awareness-Seite</h1>
-      <p className="text-muted">Verstaendliche Grundlagen zu Browserdaten, Consent und Privacy-by-Design.</p>
+      <section className="app-card p-5">
+        <h1 className="text-3xl font-bold">Datenschutz- & Awareness-Seite</h1>
+        <p className="mt-2 text-muted">Verstaendliche Grundlagen zu Browserdaten, Consent und Privacy-by-Design.</p>
+      </section>
       <div className="grid gap-3 md:grid-cols-2">
         {topics.map(([title, body]) => (
-          <article key={title} className="rounded-xl border border-border/40 bg-card p-4">
+          <article key={title} className="app-card p-4">
             <h2 className="font-semibold">{title}</h2>
             <p className="text-sm text-muted">{body}</p>
           </article>
         ))}
       </div>
-      <Link href="/" className="underline">Zur Startseite</Link>
+      <Link href="/" className="btn-ghost">Zur Startseite</Link>
     </div>
   );
 }
