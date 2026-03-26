@@ -11,8 +11,6 @@ import { ExplanationMetadata, ExportReportSchema, PermissionModuleResult, Server
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 const explainCards: ExplanationMetadata[] = [
   { name: 'HTTP Header', source: 'HTTP Request', example: 'accept-language: de-DE', defaultVisible: true, permissionRequired: false, useCases: ['Sprachwahl'], privacyRisks: ['Profilbildung'], transparencyReason: 'Nur anzeigen statt ausnutzen.' },
@@ -186,10 +184,3 @@ export default function DashboardPage() {
   );
 }
 
-export default function DashboardPage() {
-  return (
-    <Suspense fallback={<div className="rounded-xl border border-white/10 bg-card p-4 text-sm text-slate-300">Dashboard wird geladen ...</div>}>
-      <DashboardContent />
-    </Suspense>
-  );
-}
