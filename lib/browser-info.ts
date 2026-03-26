@@ -21,8 +21,16 @@ function toField(
 }
 
 export function collectBrowserInfo(): BrowserVisibleInfo {
+  if (typeof window === 'undefined') {
+    return {
+      collectedAt: new Date().toISOString(),
+      fields: []
+    };
+  }
+
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const uaData = (navigator as any).userAgentData;
+
   return {
     collectedAt: new Date().toISOString(),
     fields: [
@@ -44,7 +52,7 @@ export function collectBrowserInfo(): BrowserVisibleInfo {
       toField('dnt', 'Do Not Track', navigator.doNotTrack ?? 'nicht verfuegbar', 'navigator.doNotTrack', 'mittel', 'Optionale Datenschutzpraeferenz.'),
       toField('ua', 'User Agent', navigator.userAgent, 'navigator.userAgent', 'hoch', 'Kann Browser/OS-Version offenlegen.'),
       toField('uaData', 'userAgentData', uaData ? JSON.stringify(uaData.toJSON?.() ?? uaData) : 'nicht verfuegbar', 'navigator.userAgentData', 'hoch', 'Client Hints koennen Systemdetails enthalten.'),
-      toField('maxTouch', 'maxTouchPoints', navigator.maxTouchPoints, 'navigator.maxTouchPoints', 'mittel', 'Hinweis auf Eingabegeraete.'),
+      toField('maxTouch', 'maxTouchPoints', navigator.maxTouchPoints, 'navigator.maxTouchPoints', 'mittel', 'Hinweis auf Eingabegeraete.')
     ]
   };
 }
