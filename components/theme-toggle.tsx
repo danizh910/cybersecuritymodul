@@ -6,12 +6,14 @@ export function ThemeToggle() {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setDark(prefersDark);
     document.documentElement.classList.toggle('dark', prefersDark);
   }, []);
 
   function toggle() {
+    if (typeof window === 'undefined') return;
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle('dark', next);

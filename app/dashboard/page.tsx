@@ -9,8 +9,10 @@ import { collectBrowserInfo } from '@/lib/browser-info';
 import { detectFeatures } from '@/lib/feature-detection';
 import { ExplanationMetadata, ExportReportSchema, PermissionModuleResult, ServerRequestInfo } from '@/types/demo';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const explainCards: ExplanationMetadata[] = [
   { name: 'HTTP Header', source: 'HTTP Request', example: 'accept-language: de-DE', defaultVisible: true, permissionRequired: false, useCases: ['Sprachwahl'], privacyRisks: ['Profilbildung'], transparencyReason: 'Nur anzeigen statt ausnutzen.' },
@@ -19,8 +21,7 @@ const explainCards: ExplanationMetadata[] = [
 ];
 
 export default function DashboardPage() {
-  const params = useSearchParams();
-  const mode = (params.get('mode') ?? 'info-only') as ExportReportSchema['consentMode'];
+  const [mode, setMode] = useState<ExportReportSchema['consentMode']>('info-only');
   const [serverInfo, setServerInfo] = useState<ServerRequestInfo>();
   const [browserInfo, setBrowserInfo] = useState<ReturnType<typeof collectBrowserInfo>>();
   const [urlParams, setUrlParams] = useState<Record<string, string>>({});
@@ -35,13 +36,21 @@ export default function DashboardPage() {
   ]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const searchParams = new URLSearchParams(window.location.search);
+    const nextMode = (searchParams.get('mode') ?? 'info-only') as ExportReportSchema['consentMode'];
+    setMode(nextMode);
+    setUrlParams(Object.fromEntries(searchParams.entries()));
+    setReferrer(document.referrer || 'kein Referer');
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
     fetch('/api/request-info').then((r) => r.json()).then(setServerInfo).catch(() => undefined);
     setFeatures(detectFeatures());
     if (mode !== 'info-only') {
       setBrowserInfo(collectBrowserInfo());
     }
-    setUrlParams(Object.fromEntries(new URLSearchParams(window.location.search).entries()));
-    setReferrer(document.referrer || 'kein Referer');
   }, [mode]);
 
   function patchModule(result: PermissionModuleResult) {
@@ -49,7 +58,7 @@ export default function DashboardPage() {
   }
 
   async function startGeo() {
-    if (!navigator.geolocation) return patchModule({ moduleId: 'geolocation', status: 'browser unterstuetzt nicht', details: {} });
+    if (typeof window === 'undefined' || !navigator.geolocation) return patchModule({ moduleId: 'geolocation', status: 'browser unterstuetzt nicht', details: {} });
     return new Promise<void>((resolve) => {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -65,7 +74,7 @@ export default function DashboardPage() {
   }
 
   async function startCamMic() {
-    if (!navigator.mediaDevices?.getUserMedia) return patchModule({ moduleId: 'camera-microphone', status: 'browser unterstuetzt nicht', details: {} });
+    if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) return patchModule({ moduleId: 'camera-microphone', status: 'browser unterstuetzt nicht', details: {} });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       stream.getTracks().forEach((t) => t.stop());
@@ -76,13 +85,13 @@ export default function DashboardPage() {
   }
 
   async function startMediaDevices() {
-    if (!navigator.mediaDevices?.enumerateDevices) return patchModule({ moduleId: 'media-devices', status: 'browser unterstuetzt nicht', details: {} });
+    if (typeof window === 'undefined' || !navigator.mediaDevices?.enumerateDevices) return patchModule({ moduleId: 'media-devices', status: 'browser unterstuetzt nicht', details: {} });
     const devices = await navigator.mediaDevices.enumerateDevices();
     patchModule({ moduleId: 'media-devices', status: 'erfolgreich gelesen', details: { audioinput: devices.filter((d) => d.kind === 'audioinput').length, videoinput: devices.filter((d) => d.kind === 'videoinput').length, audiooutput: devices.filter((d) => d.kind === 'audiooutput').length, beispielLabel: devices.find((d) => d.label)?.label ?? 'Labels ohne Freigabe meist leer' } });
   }
 
   async function startFonts() {
-    if (!('queryLocalFonts' in window)) return patchModule({ moduleId: 'local-fonts', status: 'browser unterstuetzt nicht', details: {} });
+    if (typeof window === 'undefined' || !('queryLocalFonts' in window)) return patchModule({ moduleId: 'local-fonts', status: 'browser unterstuetzt nicht', details: {} });
     try {
       const fonts = await (window as any).queryLocalFonts();
       patchModule({ moduleId: 'local-fonts', status: 'erfolgreich gelesen', details: { anzahl: fonts.length, beispiele: fonts.slice(0, 5).map((f: any) => f.fullName).join(', ') } });
@@ -92,10 +101,9 @@ export default function DashboardPage() {
   }
 
   async function startWebRTC() {
-    if (!window.RTCPeerConnection) return patchModule({ moduleId: 'webrtc', status: 'browser unterstuetzt nicht', details: {} });
+    if (typeof window === 'undefined' || !window.RTCPeerConnection) return patchModule({ moduleId: 'webrtc', status: 'browser unterstuetzt nicht', details: {} });
     patchModule({ moduleId: 'webrtc', status: 'erfolgreich gelesen', details: { verfuegbar: true, candidateTypen: 'host, srflx, relay (theoretisch je nach Netzwerk)' } });
   }
-
 
   const report: ExportReportSchema = {
     exportedAt: new Date().toISOString(),
